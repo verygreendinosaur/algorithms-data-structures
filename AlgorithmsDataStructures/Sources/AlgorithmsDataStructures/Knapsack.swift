@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Knapsack.swift
 //  
 //
 //  Created by Christopher Poole on 11/9/20.
@@ -10,6 +10,40 @@ import Foundation
 struct KnapsackProblems {
   
   // MARK: Recursive / Top Down
+  
+  static func knapsack(_ items: [[Int]], _ capacity: Int) -> (Int, [Int]) {
+    let currentValue: Int = 0
+    var currentItems: [Int] = []
+    var resultValue: Int = 0
+    var resultItems: [Int] = []
+    
+    KnapsackProblems.knapsackHelper(items, capacity, start: 0, currentWeight: 0, currentValue: currentValue, currentItems: &currentItems, resultValue: &resultValue, resultItems: &resultItems)
+    
+    return (resultValue, resultItems)
+  }
+  
+  private static func knapsackHelper(_ items: [[Int]], _ capacity: Int, start: Int, currentWeight: Int, currentValue: Int, currentItems: inout [Int], resultValue: inout Int, resultItems: inout [Int]) {
+    
+    // If current weight is too much, stop
+    if currentWeight > capacity {
+      return
+    }
+    
+    // If the current value is greater than result value, reassign result value and result items
+    if currentValue > resultValue {
+      resultValue = currentValue
+      resultItems = currentItems
+    }
+    
+    for i in start..<items.count {
+      let item = items[i]
+      let itemValue = item[0]
+      let itemWeight = item[1]
+      currentItems.append(i)
+      knapsackHelper(items, capacity, start: i + 1, currentWeight: (currentWeight + itemWeight), currentValue: currentValue + itemValue, currentItems: &currentItems, resultValue: &resultValue, resultItems: &resultItems)
+      currentItems.removeLast()
+    }
+  }
   
   // MARK: Dynamic Programming / Bottom Up
   
@@ -42,49 +76,8 @@ struct KnapsackProblems {
         
       }
     }
-        
+    
     return lastChoice
   }
-    
-}
-
-func knapsack(_ items: [[Int]], _ capacity: Int) -> (Int, [Int]) {
-  let currentValue: Int = 0
-  var currentItems: [Int] = []
-  var resultValue: Int = 0
-  var resultItems: [Int] = []
   
-  knapsackHelper(items, capacity, start: 0, currentWeight: 0, currentValue: currentValue, currentItems: &currentItems, resultValue: &resultValue, resultItems: &resultItems)
-  
-  return (resultValue, resultItems)
-}
-
-private func knapsackHelper(_ items: [[Int]],
-                            _ capacity: Int,
-                            start: Int,
-                            currentWeight: Int,
-                            currentValue: Int,
-                            currentItems: inout [Int],
-                            resultValue: inout Int,
-                            resultItems: inout [Int]) {
-
-  // If current weight is too much, stop
-  if currentWeight > capacity {
-    return
-  }
-  
-  // If the current value is greater than result value, reassign result value and result items
-  if currentValue > resultValue {
-    resultValue = currentValue
-    resultItems = currentItems
-  }
-  
-  for i in start..<items.count {
-    let item = items[i]
-    let itemValue = item[0]
-    let itemWeight = item[1]
-    currentItems.append(i)
-    knapsackHelper(items, capacity, start: i + 1, currentWeight: (currentWeight + itemWeight), currentValue: currentValue + itemValue, currentItems: &currentItems, resultValue: &resultValue, resultItems: &resultItems)
-    currentItems.removeLast()
-  }
 }
